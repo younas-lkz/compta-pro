@@ -25,7 +25,11 @@ export const KpiCard: React.FC<KpiCardProps> = ({
       <p className="text-sm text-gray-500 font-medium">{label}</p>
       <p className={`text-2xl font-bold mt-1 ${colorClass}`}>
         {value}
-        {valueTag && <span className="text-sm font-normal text-gray-400 ml-1">({valueTag})</span>}
+        {valueTag && (
+          <span className="text-sm font-normal text-gray-400 ml-1">
+            ({valueTag})
+          </span>
+        )}
       </p>
       {subtleValue && (
         <p className="text-sm text-gray-400 mt-1">

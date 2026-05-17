@@ -7,7 +7,9 @@ interface BalanceOverviewProps {
 }
 
 const formatCurrency = (amount: number, currency: string): string =>
-  new Intl.NumberFormat("fr-FR", { style: "currency", currency }).format(amount);
+  new Intl.NumberFormat("fr-FR", { style: "currency", currency }).format(
+    amount,
+  );
 
 export const BalanceOverview: React.FC<BalanceOverviewProps> = ({ kpis }) => (
   <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
