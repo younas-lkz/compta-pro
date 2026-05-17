@@ -28,6 +28,7 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
     "all",
   );
   const [sortKey, setSortKey] = useState<SortKey>("valueDateUtc");
+  const [visibleCount, setVisibleCount] = useState(10);
   const [sortDesc, setSortDesc] = useState(true);
 
   const categories = useMemo(
@@ -39,6 +40,7 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
   );
 
   const filtered = useMemo(() => {
+    setVisibleCount(10);
     return transactions
       .filter((t) => {
         const matchSearch =
@@ -148,7 +150,7 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
-            {filtered.map((t, i) => (
+            {filtered.slice(0, visibleCount).map((t, i) => (
               <tr key={i} className="hover:bg-gray-50 transition-colors">
                 <td className="px-6 py-3 text-gray-600 whitespace-nowrap">
                   {formatDate(t.valueDateUtc)}
@@ -200,6 +202,16 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
           </tbody>
         </table>
       </div>
+      {visibleCount < filtered.length && (
+        <div className="px-6 py-4 border-t border-gray-100 text-center">
+          <button
+            onClick={() => setVisibleCount((n) => n + 10)}
+            className="text-sm text-indigo-600 hover:text-indigo-800 font-medium transition-colors"
+          >
+            Voir plus ({filtered.length - visibleCount} restantes)
+          </button>
+        </div>
+      )}
     </div>
   );
 };
