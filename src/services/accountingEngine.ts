@@ -8,9 +8,14 @@ import {
 
 export interface KpiSummary {
   currentBalance: number;
+  balanceExclNetVat: number;
   totalRevenue: number;
+  totalRevenueExcl: number;
   totalExpenses: number;
+  totalExpensesExcl: number;
   netResult: number;
+  netResultExcl: number;
+  netVatDue: number;
   currency: string;
 }
 
@@ -29,8 +34,8 @@ export interface MonthlyData {
 
 export interface VatSummary {
   rate: string;
-  vatAmount: number;
-  amountExcl: number;
+  collected: { vatAmount: number; amountExcl: number };
+  paid: { vatAmount: number; amountExcl: number };
 }
 
 export interface ReceiptAudit {
@@ -42,23 +47,36 @@ export interface ReceiptAudit {
 
 export const computeKpis = (transactions: Transaction[]): KpiSummary => {
   const executed = transactions.filter((t) => t.status === "Exécuté");
+  const credits = executed.filter(isCredit);
+  const debits = executed.filter(isDebit);
+
   const currentBalance =
     executed.length > 0
       ? [...executed].sort(
           (a, b) => b.valueDateUtc.getTime() - a.valueDateUtc.getTime(),
         )[0].balance
       : 0;
-  const totalRevenue = executed
-    .filter(isCredit)
-    .reduce((sum, t) => sum + t.amountTtc, 0);
-  const totalExpenses = executed
-    .filter(isDebit)
-    .reduce((sum, t) => sum + Math.abs(t.amountTtc), 0);
+
+  const totalRevenue = credits.reduce((sum, t) => sum + t.amountTtc, 0);
+  const totalRevenueExcl = credits.reduce((sum, t) => sum + t.totalAmountExcl, 0);
+
+  const totalExpenses = debits.reduce((sum, t) => sum + Math.abs(t.amountTtc), 0);
+  const totalExpensesExcl = debits.reduce((sum, t) => sum + Math.abs(t.totalAmountExcl), 0);
+
+  const vatCollected = credits.reduce((sum, t) => sum + Math.abs(t.totalVat), 0);
+  const vatPaid = debits.reduce((sum, t) => sum + Math.abs(t.totalVat), 0);
+  const netVatDue = vatCollected - vatPaid;
+
   return {
     currentBalance,
+    balanceExclNetVat: currentBalance - netVatDue,
     totalRevenue,
+    totalRevenueExcl,
     totalExpenses,
+    totalExpensesExcl,
     netResult: totalRevenue - totalExpenses,
+    netResultExcl: totalRevenueExcl - totalExpensesExcl,
+    netVatDue,
     currency: transactions[0]?.currency ?? "EUR",
   };
 };
@@ -132,39 +150,39 @@ export const groupByMonth = (transactions: Transaction[]): MonthlyData[] => {
 
 export const summarizeVat = (transactions: Transaction[]): VatSummary[] => {
   const executed = transactions.filter((t) => t.status === "Exécuté");
+  const credits = executed.filter(isCredit);
+  const debits = executed.filter(isDebit);
+
   const rates: Array<{
     rate: string;
     vat: (t: Transaction) => number;
     excl: (t: Transaction) => number;
   }> = [
-    {
-      rate: "0%",
-      vat: (t) => t.vat.rate0.vat,
-      excl: (t) => t.vat.rate0.amountExcl,
-    },
-    {
-      rate: "5,5%",
-      vat: (t) => t.vat.rate5_5.vat,
-      excl: (t) => t.vat.rate5_5.amountExcl,
-    },
-    {
-      rate: "10%",
-      vat: (t) => t.vat.rate10.vat,
-      excl: (t) => t.vat.rate10.amountExcl,
-    },
-    {
-      rate: "20%",
-      vat: (t) => t.vat.rate20.vat,
-      excl: (t) => t.vat.rate20.amountExcl,
-    },
+    { rate: "0%",   vat: (t) => t.vat.rate0.vat,   excl: (t) => t.vat.rate0.amountExcl },
+    { rate: "5,5%", vat: (t) => t.vat.rate5_5.vat, excl: (t) => t.vat.rate5_5.amountExcl },
+    { rate: "10%",  vat: (t) => t.vat.rate10.vat,  excl: (t) => t.vat.rate10.amountExcl },
+    { rate: "20%",  vat: (t) => t.vat.rate20.vat,  excl: (t) => t.vat.rate20.amountExcl },
   ];
+
   return rates
     .map(({ rate, vat, excl }) => ({
       rate,
-      vatAmount: executed.reduce((sum, t) => sum + Math.abs(vat(t)), 0),
-      amountExcl: executed.reduce((sum, t) => sum + Math.abs(excl(t)), 0),
+      collected: {
+        vatAmount: credits.reduce((sum, t) => sum + Math.abs(vat(t)), 0),
+        amountExcl: credits.reduce((sum, t) => sum + Math.abs(excl(t)), 0),
+      },
+      paid: {
+        vatAmount: debits.reduce((sum, t) => sum + Math.abs(vat(t)), 0),
+        amountExcl: debits.reduce((sum, t) => sum + Math.abs(excl(t)), 0),
+      },
     }))
-    .filter((s) => s.vatAmount > 0 || s.amountExcl > 0);
+    .filter(
+      (s) =>
+        s.collected.vatAmount > 0 ||
+        s.collected.amountExcl > 0 ||
+        s.paid.vatAmount > 0 ||
+        s.paid.amountExcl > 0
+    );
 };
 
 export const auditReceipts = (transactions: Transaction[]): ReceiptAudit => {

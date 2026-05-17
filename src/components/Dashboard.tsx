@@ -5,13 +5,12 @@ import {
   groupExpensesByCategory,
   groupByMonth,
   summarizeVat,
-  auditReceipts,
 } from "../services/accountingEngine";
 import { BalanceOverview } from "./BalanceOverview";
 import { CategoryBreakdown } from "./CategoryBreakdown";
 import { MonthlyTrend } from "./MonthlyTrend";
 import { VatSummary } from "./VatSummary";
-import { ReceiptStatus } from "./ReceiptStatus";
+import { IrSimulation } from "./IrSimulation";
 import { TransactionTable } from "./TransactionTable";
 
 interface DashboardProps {
@@ -32,10 +31,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
   );
   const monthlyData = useMemo(() => groupByMonth(transactions), [transactions]);
   const vatData = useMemo(() => summarizeVat(transactions), [transactions]);
-  const receiptAudit = useMemo(
-    () => auditReceipts(transactions),
-    [transactions],
-  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -67,7 +62,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <VatSummary vatData={vatData} currency={kpis.currency} />
-          <ReceiptStatus audit={receiptAudit} />
+          <IrSimulation
+            balanceExclNetVat={kpis.balanceExclNetVat}
+            currency={kpis.currency}
+          />
         </div>
 
         <TransactionTable transactions={transactions} />

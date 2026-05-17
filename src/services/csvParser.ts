@@ -2,7 +2,7 @@ import Papa from "papaparse";
 import type { Transaction, VatBreakdown } from "../domain/transaction";
 
 /** Parses a French-formatted number string ("1 234,56" or "-1,18") to a float. */
-const parseEuropeanNumber = (value: string): number => {
+const parseEuropeanNumber = (value: string | undefined): number => {
   if (!value || value.trim() === "") return 0;
   const normalized = value.replace(/\s/g, "").replace(",", ".");
   return parseFloat(normalized) || 0;
@@ -16,24 +16,36 @@ const parseQontoDate = (value: string): Date => {
   return new Date(`${year}-${month}-${day}T${timePart ?? "00:00:00"}Z`);
 };
 
+/**
+ * Finds a column value by partial, case-insensitive key matching.
+ * This handles minor variations in Qonto CSV column names across exports.
+ */
+const findColumn = (row: Record<string, string>, ...fragments: string[]): string => {
+  const key = Object.keys(row).find((k) =>
+    fragments.every((f) => k.toLowerCase().includes(f.toLowerCase()))
+  );
+  return key ? (row[key] ?? "") : "";
+};
+
 const buildVatBreakdown = (row: Record<string, string>): VatBreakdown => ({
   rate0: {
-    vat: parseEuropeanNumber(row["Montant de la TVA (0.0 %)"]),
-    amountExcl: parseEuropeanNumber(row["Montant (0.0 % HT)"]),
+    vat: parseEuropeanNumber(findColumn(row, "TVA", "0.0")),
+    amountExcl: parseEuropeanNumber(findColumn(row, "HT", "0.0")),
   },
   rate5_5: {
-    vat: parseEuropeanNumber(row["Montant de la TVA (5.5 %)"]),
-    amountExcl: parseEuropeanNumber(row["Montant (5.5 % HT)"]),
+    vat: parseEuropeanNumber(findColumn(row, "TVA", "5.5")),
+    amountExcl: parseEuropeanNumber(findColumn(row, "HT", "5.5")),
   },
   rate10: {
-    vat: parseEuropeanNumber(row["Montant de la TVA (10.0 %)"]),
-    amountExcl: parseEuropeanNumber(row["Montant (10.0 % HT)"]),
+    vat: parseEuropeanNumber(findColumn(row, "TVA", "10.0")),
+    amountExcl: parseEuropeanNumber(findColumn(row, "HT", "10.0")),
   },
   rate20: {
-    vat: parseEuropeanNumber(row["Montant de la TVA (20.0 %)"]),
-    amountExcl: parseEuropeanNumber(row["Montant (20.0 % HT)"]),
+    vat: parseEuropeanNumber(findColumn(row, "TVA", "20.0")),
+    amountExcl: parseEuropeanNumber(findColumn(row, "HT", "20.0")),
   },
 });
+
 
 const mapRowToTransaction = (row: Record<string, string>): Transaction => ({
   status: row["Statut"] as Transaction["status"],

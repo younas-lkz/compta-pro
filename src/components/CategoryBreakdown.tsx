@@ -4,7 +4,6 @@ import {
   Pie,
   Cell,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from "recharts";
 import type { CategoryAmount } from "../services/accountingEngine";
@@ -57,12 +56,11 @@ export const CategoryBreakdown: React.FC<CategoryBreakdownProps> = ({
             ))}
           </Pie>
           <Tooltip
-            formatter={(value) => [
+            formatter={(value, name) => [
               formatCurrency(Number(value ?? 0), currency),
-              "Montant",
+              name,
             ]}
           />
-          <Legend />
         </PieChart>
       </ResponsiveContainer>
       <div className="mt-4 space-y-2">
