@@ -12,7 +12,7 @@ const formatCurrency = (amount: number, currency: string): string =>
   );
 
 export const BalanceOverview: React.FC<BalanceOverviewProps> = ({ kpis }) => (
-  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
     <KpiCard
       label="Solde actuel"
       value={formatCurrency(kpis.currentBalance, kpis.currency)}
@@ -38,15 +38,6 @@ export const BalanceOverview: React.FC<BalanceOverviewProps> = ({ kpis }) => (
       icon="📉"
       colorClass="text-red-500"
       subtleValue={formatCurrency(kpis.totalExpensesExcl, kpis.currency)}
-      subtleTag="HT"
-    />
-    <KpiCard
-      label="Résultat net"
-      value={formatCurrency(kpis.netResult, kpis.currency)}
-      valueTag="TTC"
-      icon={kpis.netResult >= 0 ? "✅" : "⚠️"}
-      colorClass={kpis.netResult >= 0 ? "text-green-600" : "text-red-500"}
-      subtleValue={formatCurrency(kpis.netResultExcl, kpis.currency)}
       subtleTag="HT"
     />
   </div>

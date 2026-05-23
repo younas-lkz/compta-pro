@@ -14,7 +14,7 @@ export const IrSimulation: React.FC<IrSimulationProps> = ({
   balanceExclNetVat,
   currency,
 }) => {
-  const [irRate, setIrRate] = useState(16);
+  const [irRate, setIrRate] = useState(20);
 
   const irAmount = balanceExclNetVat * (irRate / 100);
   const netAfterIr = balanceExclNetVat - irAmount;
