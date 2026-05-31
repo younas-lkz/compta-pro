@@ -16,6 +16,7 @@ export interface KpiSummary {
   netResult: number;
   netResultExcl: number;
   netVatDue: number;
+  totalSalaries: number;
   currency: string;
 }
 
@@ -58,14 +59,30 @@ export const computeKpis = (transactions: Transaction[]): KpiSummary => {
       : 0;
 
   const totalRevenue = credits.reduce((sum, t) => sum + t.amountTtc, 0);
-  const totalRevenueExcl = credits.reduce((sum, t) => sum + t.totalAmountExcl, 0);
+  const totalRevenueExcl = credits.reduce(
+    (sum, t) => sum + t.totalAmountExcl,
+    0,
+  );
 
-  const totalExpenses = debits.reduce((sum, t) => sum + Math.abs(t.amountTtc), 0);
-  const totalExpensesExcl = debits.reduce((sum, t) => sum + Math.abs(t.totalAmountExcl), 0);
+  const totalExpenses = debits.reduce(
+    (sum, t) => sum + Math.abs(t.amountTtc),
+    0,
+  );
+  const totalExpensesExcl = debits.reduce(
+    (sum, t) => sum + Math.abs(t.totalAmountExcl),
+    0,
+  );
 
-  const vatCollected = credits.reduce((sum, t) => sum + Math.abs(t.totalVat), 0);
+  const vatCollected = credits.reduce(
+    (sum, t) => sum + Math.abs(t.totalVat),
+    0,
+  );
   const vatPaid = debits.reduce((sum, t) => sum + Math.abs(t.totalVat), 0);
   const netVatDue = vatCollected - vatPaid;
+
+  const totalSalaries = debits
+    .filter((t) => t.cashFlowSubcategory === "Salaires")
+    .reduce((sum, t) => sum + Math.abs(t.amountTtc), 0);
 
   return {
     currentBalance,
@@ -77,6 +94,7 @@ export const computeKpis = (transactions: Transaction[]): KpiSummary => {
     netResult: totalRevenue - totalExpenses,
     netResultExcl: totalRevenueExcl - totalExpensesExcl,
     netVatDue,
+    totalSalaries,
     currency: transactions[0]?.currency ?? "EUR",
   };
 };
@@ -158,10 +176,26 @@ export const summarizeVat = (transactions: Transaction[]): VatSummary[] => {
     vat: (t: Transaction) => number;
     excl: (t: Transaction) => number;
   }> = [
-    { rate: "0%",   vat: (t) => t.vat.rate0.vat,   excl: (t) => t.vat.rate0.amountExcl },
-    { rate: "5,5%", vat: (t) => t.vat.rate5_5.vat, excl: (t) => t.vat.rate5_5.amountExcl },
-    { rate: "10%",  vat: (t) => t.vat.rate10.vat,  excl: (t) => t.vat.rate10.amountExcl },
-    { rate: "20%",  vat: (t) => t.vat.rate20.vat,  excl: (t) => t.vat.rate20.amountExcl },
+    {
+      rate: "0%",
+      vat: (t) => t.vat.rate0.vat,
+      excl: (t) => t.vat.rate0.amountExcl,
+    },
+    {
+      rate: "5,5%",
+      vat: (t) => t.vat.rate5_5.vat,
+      excl: (t) => t.vat.rate5_5.amountExcl,
+    },
+    {
+      rate: "10%",
+      vat: (t) => t.vat.rate10.vat,
+      excl: (t) => t.vat.rate10.amountExcl,
+    },
+    {
+      rate: "20%",
+      vat: (t) => t.vat.rate20.vat,
+      excl: (t) => t.vat.rate20.amountExcl,
+    },
   ];
 
   return rates
@@ -181,7 +215,7 @@ export const summarizeVat = (transactions: Transaction[]): VatSummary[] => {
         s.collected.vatAmount > 0 ||
         s.collected.amountExcl > 0 ||
         s.paid.vatAmount > 0 ||
-        s.paid.amountExcl > 0
+        s.paid.amountExcl > 0,
     );
 };
 
