@@ -17,6 +17,7 @@ export interface KpiSummary {
   netResultExcl: number;
   netVatDue: number;
   totalSalaries: number;
+  totalFoodAndDrinks: number;
   currency: string;
 }
 
@@ -83,6 +84,9 @@ export const computeKpis = (transactions: Transaction[]): KpiSummary => {
   const totalSalaries = debits
     .filter((t) => t.cashFlowSubcategory === "Salaires")
     .reduce((sum, t) => sum + Math.abs(t.amountTtc), 0);
+  const totalFoodAndDrinks = debits
+    .filter((t) => t.cashFlowCategory === "Frais de nourriture et boissons")
+    .reduce((sum, t) => sum + Math.abs(t.amountTtc), 0);
 
   return {
     currentBalance,
@@ -95,6 +99,7 @@ export const computeKpis = (transactions: Transaction[]): KpiSummary => {
     netResultExcl: totalRevenueExcl - totalExpensesExcl,
     netVatDue,
     totalSalaries,
+    totalFoodAndDrinks,
     currency: transactions[0]?.currency ?? "EUR",
   };
 };

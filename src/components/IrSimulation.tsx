@@ -3,6 +3,7 @@ import React, { useState } from "react";
 interface IrSimulationProps {
   balanceExclNetVat: number;
   totalSalaries: number;
+  totalFoodAndDrinks: number;
   currency: string;
 }
 
@@ -14,11 +15,12 @@ const formatCurrency = (amount: number, currency: string): string =>
 export const IrSimulation: React.FC<IrSimulationProps> = ({
   balanceExclNetVat,
   totalSalaries,
+  totalFoodAndDrinks,
   currency,
 }) => {
   const [irRate, setIrRate] = useState(20);
 
-  const irBase = balanceExclNetVat + totalSalaries;
+  const irBase = balanceExclNetVat + totalSalaries + totalFoodAndDrinks;
   const irAmount = irBase * (irRate / 100);
   const netAfterIr = balanceExclNetVat - irAmount;
 
@@ -59,6 +61,14 @@ export const IrSimulation: React.FC<IrSimulationProps> = ({
           <span className="text-sm text-gray-500">Salaires réintégrés</span>
           <span className="font-medium text-gray-800">
             + {formatCurrency(totalSalaries, currency)}
+          </span>
+        </div>
+        <div className="flex justify-between items-center py-2 border-b border-gray-50">
+          <span className="text-sm text-gray-500">
+            Frais de nourriture et boissons réintégrés
+          </span>
+          <span className="font-medium text-gray-800">
+            + {formatCurrency(totalFoodAndDrinks, currency)}
           </span>
         </div>
         <div className="flex justify-between items-center py-2 border-b border-gray-50">

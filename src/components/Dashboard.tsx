@@ -65,6 +65,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <IrSimulation
             balanceExclNetVat={kpis.balanceExclNetVat}
             totalSalaries={kpis.totalSalaries}
+            totalFoodAndDrinks={kpis.totalFoodAndDrinks}
             currency={kpis.currency}
           />
         </div>
