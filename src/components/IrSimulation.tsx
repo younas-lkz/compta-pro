@@ -21,10 +21,13 @@ export const IrSimulation: React.FC<IrSimulationProps> = ({
   const [irRate, setIrRate] = useState(20);
 
   const irBase = balanceExclNetVat + totalSalaries + totalFoodAndDrinks;
+  const patrimoineRate = 18.6;
   const irAmount = irBase * (irRate / 100);
+  const patrimoineAmount = irBase * (patrimoineRate / 100);
   const balanceAfterSalaries = balanceExclNetVat + totalSalaries;
   const balanceAfterFoodAndDrinks = balanceAfterSalaries + totalFoodAndDrinks;
-  const netAfterIr = balanceAfterFoodAndDrinks - irAmount;
+  const netAfterIr = balanceExclNetVat - irAmount;
+  const netAfterPatrimoine = netAfterIr - patrimoineAmount;
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
@@ -52,7 +55,7 @@ export const IrSimulation: React.FC<IrSimulationProps> = ({
         <span className="text-sm text-gray-500">%</span>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         <div className="overflow-hidden rounded-xl border border-gray-100">
           <div className="hidden grid-cols-[minmax(0,1fr)_minmax(0,8rem)_minmax(0,8rem)] gap-x-4 bg-gray-50 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-gray-500 md:grid">
             <span>Opération</span>
@@ -107,6 +110,16 @@ export const IrSimulation: React.FC<IrSimulationProps> = ({
                 {formatCurrency(balanceAfterFoodAndDrinks, currency)}
               </span>
             </div>
+          </div>
+        </div>
+
+        <div className="overflow-hidden rounded-xl border border-gray-100">
+          <div className="hidden grid-cols-[minmax(0,1fr)_minmax(0,8rem)_minmax(0,8rem)] gap-x-4 bg-gray-50 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-gray-500 md:grid">
+            <span>Prélèvement</span>
+            <span className="text-right">Montant</span>
+            <span className="text-right">Solde</span>
+          </div>
+          <div className="divide-y divide-gray-50">
             <div className="grid grid-cols-1 gap-y-1 px-4 py-2 md:grid-cols-[minmax(0,1fr)_minmax(0,8rem)_minmax(0,8rem)] md:items-center md:gap-x-4 md:gap-y-0">
               <span className="text-sm text-gray-500">
                 IR estimé ({irRate} %)
@@ -126,16 +139,35 @@ export const IrSimulation: React.FC<IrSimulationProps> = ({
                 {formatCurrency(netAfterIr, currency)}
               </span>
             </div>
+            <div className="grid grid-cols-1 gap-y-1 px-4 py-2 md:grid-cols-[minmax(0,1fr)_minmax(0,8rem)_minmax(0,8rem)] md:items-center md:gap-x-4 md:gap-y-0">
+              <span className="text-sm text-gray-500">
+                Prélèvement patrimoine ({patrimoineRate.toLocaleString("fr-FR")} %)
+              </span>
+              <span className="flex items-center justify-between font-medium text-red-500 md:block md:text-right md:tabular-nums">
+                <span className="text-xs uppercase tracking-wide text-gray-400 md:hidden">
+                  Montant
+                </span>
+                − {formatCurrency(patrimoineAmount, currency)}
+              </span>
+              <span
+                className={`flex items-center justify-between font-medium md:block md:text-right md:tabular-nums ${netAfterPatrimoine >= 0 ? "text-gray-800" : "text-red-500"}`}
+              >
+                <span className="text-xs uppercase tracking-wide text-gray-400 md:hidden">
+                  Solde
+                </span>
+                {formatCurrency(netAfterPatrimoine, currency)}
+              </span>
+            </div>
           </div>
         </div>
         <div className="flex justify-between items-center pt-2">
           <span className="text-sm font-semibold text-gray-700">
-            Solde net après IR
+            Solde net après prélèvements
           </span>
           <span
-            className={`text-xl font-bold ${netAfterIr >= 0 ? "text-green-600" : "text-red-500"}`}
+            className={`text-xl font-bold ${netAfterPatrimoine >= 0 ? "text-green-600" : "text-red-500"}`}
           >
-            {formatCurrency(netAfterIr, currency)}
+            {formatCurrency(netAfterPatrimoine, currency)}
           </span>
         </div>
       </div>
