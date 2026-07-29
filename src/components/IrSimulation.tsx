@@ -22,7 +22,9 @@ export const IrSimulation: React.FC<IrSimulationProps> = ({
 
   const irBase = balanceExclNetVat + totalSalaries + totalFoodAndDrinks;
   const irAmount = irBase * (irRate / 100);
-  const netAfterIr = balanceExclNetVat - irAmount;
+  const balanceAfterSalaries = balanceExclNetVat + totalSalaries;
+  const balanceAfterFoodAndDrinks = balanceAfterSalaries + totalFoodAndDrinks;
+  const netAfterIr = balanceAfterFoodAndDrinks - irAmount;
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
@@ -51,31 +53,78 @@ export const IrSimulation: React.FC<IrSimulationProps> = ({
       </div>
 
       <div className="space-y-3">
-        <div className="flex justify-between items-center py-2 border-b border-gray-50">
-          <span className="text-sm text-gray-500">Solde actuel (HT)</span>
-          <span className="font-medium text-gray-800">
-            {formatCurrency(balanceExclNetVat, currency)}
-          </span>
-        </div>
-        <div className="flex justify-between items-center py-2 border-b border-gray-50">
-          <span className="text-sm text-gray-500">Salaires réintégrés</span>
-          <span className="font-medium text-gray-800">
-            + {formatCurrency(totalSalaries, currency)}
-          </span>
-        </div>
-        <div className="flex justify-between items-center py-2 border-b border-gray-50">
-          <span className="text-sm text-gray-500">
-            Frais de nourriture et boissons réintégrés
-          </span>
-          <span className="font-medium text-gray-800">
-            + {formatCurrency(totalFoodAndDrinks, currency)}
-          </span>
-        </div>
-        <div className="flex justify-between items-center py-2 border-b border-gray-50">
-          <span className="text-sm text-gray-500">IR estimé ({irRate} %)</span>
-          <span className="font-medium text-red-500">
-            − {formatCurrency(irAmount, currency)}
-          </span>
+        <div className="overflow-hidden rounded-xl border border-gray-100">
+          <div className="hidden grid-cols-[minmax(0,1fr)_auto_auto] gap-x-4 bg-gray-50 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-gray-500 md:grid">
+            <span>Opération</span>
+            <span className="text-right">Montant</span>
+            <span className="text-right">Solde</span>
+          </div>
+          <div className="divide-y divide-gray-50">
+            <div className="grid grid-cols-1 gap-y-1 px-4 py-2 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-center md:gap-x-4 md:gap-y-0">
+              <span className="text-sm text-gray-500">Solde actuel (HT)</span>
+              <span className="flex items-center justify-between font-medium text-gray-800 md:block md:text-right">
+                <span className="text-xs uppercase tracking-wide text-gray-400 md:hidden">
+                  Montant
+                </span>
+                {formatCurrency(balanceExclNetVat, currency)}
+              </span>
+              <span className="flex items-center justify-between font-medium text-gray-800 md:block md:text-right">
+                <span className="text-xs uppercase tracking-wide text-gray-400 md:hidden">
+                  Solde
+                </span>
+                {formatCurrency(balanceExclNetVat, currency)}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 gap-y-1 px-4 py-2 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-center md:gap-x-4 md:gap-y-0">
+              <span className="text-sm text-gray-500">Salaires réintégrés</span>
+              <span className="flex items-center justify-between font-medium text-gray-800 md:block md:text-right">
+                <span className="text-xs uppercase tracking-wide text-gray-400 md:hidden">
+                  Montant
+                </span>
+                + {formatCurrency(totalSalaries, currency)}
+              </span>
+              <span className="flex items-center justify-between font-medium text-gray-800 md:block md:text-right">
+                <span className="text-xs uppercase tracking-wide text-gray-400 md:hidden">
+                  Solde
+                </span>
+                {formatCurrency(balanceAfterSalaries, currency)}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 gap-y-1 px-4 py-2 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-center md:gap-x-4 md:gap-y-0">
+              <span className="text-sm text-gray-500">
+                Frais de nourriture et boissons réintégrés
+              </span>
+              <span className="flex items-center justify-between font-medium text-gray-800 md:block md:text-right">
+                <span className="text-xs uppercase tracking-wide text-gray-400 md:hidden">
+                  Montant
+                </span>
+                + {formatCurrency(totalFoodAndDrinks, currency)}
+              </span>
+              <span className="flex items-center justify-between font-medium text-gray-800 md:block md:text-right">
+                <span className="text-xs uppercase tracking-wide text-gray-400 md:hidden">
+                  Solde
+                </span>
+                {formatCurrency(balanceAfterFoodAndDrinks, currency)}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 gap-y-1 px-4 py-2 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-center md:gap-x-4 md:gap-y-0">
+              <span className="text-sm text-gray-500">IR estimé ({irRate} %)</span>
+              <span className="flex items-center justify-between font-medium text-red-500 md:block md:text-right">
+                <span className="text-xs uppercase tracking-wide text-gray-400 md:hidden">
+                  Montant
+                </span>
+                − {formatCurrency(irAmount, currency)}
+              </span>
+              <span
+                className={`flex items-center justify-between font-medium md:block md:text-right ${netAfterIr >= 0 ? "text-gray-800" : "text-red-500"}`}
+              >
+                <span className="text-xs uppercase tracking-wide text-gray-400 md:hidden">
+                  Solde
+                </span>
+                {formatCurrency(netAfterIr, currency)}
+              </span>
+            </div>
+          </div>
         </div>
         <div className="flex justify-between items-center pt-2">
           <span className="text-sm font-semibold text-gray-700">
