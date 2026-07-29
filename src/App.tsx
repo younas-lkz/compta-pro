@@ -29,7 +29,7 @@ const App: React.FC = () => {
       <UploadZone onFile={handleFile} isLoading={loadingState === "parsing"} />
 
       {errors.length > 0 && (
-        <div className="mt-6 max-w-xl w-full bg-red-50 border border-red-200 rounded-xl p-4">
+        <div className="mt-6 max-w-2xl w-full bg-red-50 border border-red-200 rounded-xl p-4">
           <p className="text-red-700 font-semibold mb-1">
             Erreur lors de l'analyse :
           </p>

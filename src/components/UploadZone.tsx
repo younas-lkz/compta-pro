@@ -33,7 +33,7 @@ export const UploadZone: React.FC<UploadZoneProps> = ({
 
   return (
     <div
-      className={`flex flex-col items-center justify-center w-full max-w-xl mx-auto border-2 border-dashed rounded-2xl p-12 cursor-pointer transition-colors
+      className={`flex flex-col items-center justify-center w-full max-w-2xl mx-auto border-2 border-dashed rounded-2xl p-12 cursor-pointer transition-colors
         ${isDragging ? "border-indigo-500 bg-indigo-50" : "border-gray-300 bg-white hover:border-indigo-400 hover:bg-gray-50"}`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}

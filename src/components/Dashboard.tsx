@@ -52,15 +52,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </button>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+      <main className="max-w-[96rem] mx-auto px-6 py-8 space-y-8">
         <BalanceOverview kpis={kpis} />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           <CategoryBreakdown categories={categories} currency={kpis.currency} />
           <MonthlyTrend data={monthlyData} currency={kpis.currency} />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           <VatSummary vatData={vatData} currency={kpis.currency} />
           <IrSimulation
             balanceExclNetVat={kpis.balanceExclNetVat}

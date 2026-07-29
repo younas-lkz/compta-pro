@@ -54,69 +54,71 @@ export const IrSimulation: React.FC<IrSimulationProps> = ({
 
       <div className="space-y-3">
         <div className="overflow-hidden rounded-xl border border-gray-100">
-          <div className="hidden grid-cols-[minmax(0,1fr)_auto_auto] gap-x-4 bg-gray-50 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-gray-500 md:grid">
+          <div className="hidden grid-cols-[minmax(0,1fr)_minmax(0,8rem)_minmax(0,8rem)] gap-x-4 bg-gray-50 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-gray-500 md:grid">
             <span>Opération</span>
             <span className="text-right">Montant</span>
             <span className="text-right">Solde</span>
           </div>
           <div className="divide-y divide-gray-50">
-            <div className="grid grid-cols-1 gap-y-1 px-4 py-2 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-center md:gap-x-4 md:gap-y-0">
+            <div className="grid grid-cols-1 gap-y-1 px-4 py-2 md:grid-cols-[minmax(0,1fr)_minmax(0,8rem)_minmax(0,8rem)] md:items-center md:gap-x-4 md:gap-y-0">
               <span className="text-sm text-gray-500">Solde actuel (HT)</span>
-              <span className="flex items-center justify-between font-medium text-gray-800 md:block md:text-right">
+              <span className="flex items-center justify-between font-medium text-gray-800 md:block md:text-right md:tabular-nums">
                 <span className="text-xs uppercase tracking-wide text-gray-400 md:hidden">
                   Montant
                 </span>
                 {formatCurrency(balanceExclNetVat, currency)}
               </span>
-              <span className="flex items-center justify-between font-medium text-gray-800 md:block md:text-right">
+              <span className="flex items-center justify-between font-medium text-gray-800 md:block md:text-right md:tabular-nums">
                 <span className="text-xs uppercase tracking-wide text-gray-400 md:hidden">
                   Solde
                 </span>
                 {formatCurrency(balanceExclNetVat, currency)}
               </span>
             </div>
-            <div className="grid grid-cols-1 gap-y-1 px-4 py-2 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-center md:gap-x-4 md:gap-y-0">
+            <div className="grid grid-cols-1 gap-y-1 px-4 py-2 md:grid-cols-[minmax(0,1fr)_minmax(0,8rem)_minmax(0,8rem)] md:items-center md:gap-x-4 md:gap-y-0">
               <span className="text-sm text-gray-500">Salaires réintégrés</span>
-              <span className="flex items-center justify-between font-medium text-gray-800 md:block md:text-right">
+              <span className="flex items-center justify-between font-medium text-gray-800 md:block md:text-right md:tabular-nums">
                 <span className="text-xs uppercase tracking-wide text-gray-400 md:hidden">
                   Montant
                 </span>
                 + {formatCurrency(totalSalaries, currency)}
               </span>
-              <span className="flex items-center justify-between font-medium text-gray-800 md:block md:text-right">
+              <span className="flex items-center justify-between font-medium text-gray-800 md:block md:text-right md:tabular-nums">
                 <span className="text-xs uppercase tracking-wide text-gray-400 md:hidden">
                   Solde
                 </span>
                 {formatCurrency(balanceAfterSalaries, currency)}
               </span>
             </div>
-            <div className="grid grid-cols-1 gap-y-1 px-4 py-2 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-center md:gap-x-4 md:gap-y-0">
+            <div className="grid grid-cols-1 gap-y-1 px-4 py-2 md:grid-cols-[minmax(0,1fr)_minmax(0,8rem)_minmax(0,8rem)] md:items-center md:gap-x-4 md:gap-y-0">
               <span className="text-sm text-gray-500">
                 Frais de nourriture et boissons réintégrés
               </span>
-              <span className="flex items-center justify-between font-medium text-gray-800 md:block md:text-right">
+              <span className="flex items-center justify-between font-medium text-gray-800 md:block md:text-right md:tabular-nums">
                 <span className="text-xs uppercase tracking-wide text-gray-400 md:hidden">
                   Montant
                 </span>
                 + {formatCurrency(totalFoodAndDrinks, currency)}
               </span>
-              <span className="flex items-center justify-between font-medium text-gray-800 md:block md:text-right">
+              <span className="flex items-center justify-between font-medium text-gray-800 md:block md:text-right md:tabular-nums">
                 <span className="text-xs uppercase tracking-wide text-gray-400 md:hidden">
                   Solde
                 </span>
                 {formatCurrency(balanceAfterFoodAndDrinks, currency)}
               </span>
             </div>
-            <div className="grid grid-cols-1 gap-y-1 px-4 py-2 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-center md:gap-x-4 md:gap-y-0">
-              <span className="text-sm text-gray-500">IR estimé ({irRate} %)</span>
-              <span className="flex items-center justify-between font-medium text-red-500 md:block md:text-right">
+            <div className="grid grid-cols-1 gap-y-1 px-4 py-2 md:grid-cols-[minmax(0,1fr)_minmax(0,8rem)_minmax(0,8rem)] md:items-center md:gap-x-4 md:gap-y-0">
+              <span className="text-sm text-gray-500">
+                IR estimé ({irRate} %)
+              </span>
+              <span className="flex items-center justify-between font-medium text-red-500 md:block md:text-right md:tabular-nums">
                 <span className="text-xs uppercase tracking-wide text-gray-400 md:hidden">
                   Montant
                 </span>
                 − {formatCurrency(irAmount, currency)}
               </span>
               <span
-                className={`flex items-center justify-between font-medium md:block md:text-right ${netAfterIr >= 0 ? "text-gray-800" : "text-red-500"}`}
+                className={`flex items-center justify-between font-medium md:block md:text-right md:tabular-nums ${netAfterIr >= 0 ? "text-gray-800" : "text-red-500"}`}
               >
                 <span className="text-xs uppercase tracking-wide text-gray-400 md:hidden">
                   Solde
